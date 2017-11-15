@@ -65,7 +65,7 @@ const porter = (function() {
   const R2_RE = R1_RE + V_RE + C_RE + '.*?';
   const SS1_RE = C_RE + V_RE + '[^aeiouwxY]', SS2_RE = '$' + V_RE + C_RE;
   const SS_RE = _p(SS1_RE) + '|' + _p(SS2_RE);
-  const SW_RE = C_RE + '*' + SS1_RE + '|' + SS2_RE;
+  const SW_RE = new RegExp(C_RE + '*' + SS1_RE + '|' + SS2_RE);
 
   // Function for step 0.
   const step_0 = word => {
