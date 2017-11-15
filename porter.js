@@ -64,7 +64,6 @@ const porter = (function() {
   const R1_RE = V_RE + C_RE + '.*?';
   const R2_RE = R1_RE + V_RE + C_RE + '.*?';
   const SS1_RE = C_RE + V_RE + '[^aeiouwxY]', SS2_RE = '$' + V_RE + C_RE;
-  const SS_RE = _p(SS1_RE) + '|' + _p(SS2_RE);
   const SW_RE = new RegExp(C_RE + '*' + SS1_RE + '|' + SS2_RE);
 
   // Function for step 0.
@@ -105,8 +104,8 @@ const porter = (function() {
   const S2_PRE = Object.keys(STEP_2_REPLACEMENTS)
     .sort((a, b) => b.length - a.length)
     .reduce((a, x) => a + '|' + x);
-  const S21_RE = new RegExp('(.+?)' + _p(S2_PRE) + '$');
-  const S22_RE = new RegExp('(.+?' + L_RE + ')li4');  // -> $1
+  const S21_RE = new RegExp(_p('^.+?' + R1_RE) + _p(S2_PRE) + '$');
+  const S22_RE = new RegExp('(.+?' + R1_RE + L_RE + ')li$');  // -> $1
 
   // Function for step 2.
   const step_2 = word => {
@@ -122,7 +121,7 @@ const porter = (function() {
   const S3_PRE = Object.keys(STEP_3_REPLACEMENTS)
     .sort((a, b) => b.length - a.length)
     .reduce((a, x) => a + '|' + x);
-  const S31_RE = new RegExp(_p(R1_RE) + _p(S3_PRE) + '$');
+  const S31_RE = new RegExp(_p('^.+?' + R1_RE) + _p(S3_PRE) + '$');
   const S32_RE = new RegExp(_p(R2_RE) + 'ative$');  // -> $1
 
   const step_3 = word => {
@@ -146,12 +145,14 @@ const porter = (function() {
   }
 
   // Regex for step 5.
-  const S51_RE = new RegExp(_p(_p(R2_RE) + '|' + _p(R1_RE + SS_RE)) + 'e$');
-  const S52_RE = new RegExp(_p(R2_RE + 'l') + 'l$');  // -> 1
+  const S51_RE = new RegExp(_p(R2_RE + 'l') + 'l$');  // -> 1
+  const SS_RE = _p('?!' + _p(SS1_RE + '|' + SS2_RE));
+  const S52_RE = new RegExp(_p(_p(R2_RE) + '|' + _p(R1_RE + SS_RE)) + 'e$');
 
   // Function for step 5.
   const step_5 = word => {
-    return word.replace(S52_RE, '$1').replace(S51_RE, '$1');
+    if (S51_RE.test(word)) return word.replace(S51_RE, '$1');
+    return word.replace(S52_RE, '$1');
   }
 
   const stem_word = word => {
