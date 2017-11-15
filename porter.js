@@ -172,7 +172,7 @@ const porter = (function() {
 
   const stem = doc => {
     if (typeof doc === 'string') {
-      doc = $.trim(doc).toLowerCase().replace(/\s+/g,' ').split(' ');
+      doc = $.trim(doc).toLowerCase().replace(/(\s|[^a-z'])+/g,' ').split(' ');
     }
     return doc.map(stem_word);
   }
