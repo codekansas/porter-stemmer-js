@@ -146,8 +146,7 @@ const porter = (function() {
 
   // Regex for step 5.
   const S51_RE = new RegExp(_p(R2_RE + 'l') + 'l$');  // -> 1
-  const SS_RE = _p('?!' + _p(SS1_RE + '|' + SS2_RE));
-  const S52_RE = new RegExp(_p(_p(R2_RE) + '|' + _p(R1_RE + SS_RE)) + 'e$');
+  const S52_RE = new RegExp(_p(_p(R2_RE) + '|' + _p(R1_RE + SS1_RE)) + 'e$');
 
   // Function for step 5.
   const step_5 = word => {
@@ -158,7 +157,7 @@ const porter = (function() {
   const stem_word = word => {
     if (word.length <= 2) return word;
     word = word.replace(/^\'/, '');  // Replaces first '.
-    word = word.replace(/^y|[aeiouy]y/g, 'Y');  // Replaces y -> Y.
+    word = word.replace(/^y|([aeiouy])y/g, '$1Y');  // Replaces y -> Y.
     word = step_0(word);
     word = step_1a(word);
     word = step_1b(word);
