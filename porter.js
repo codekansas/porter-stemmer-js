@@ -76,7 +76,7 @@ const porter = (function() {
   const S1A1_RE = new RegExp('(ss|i)es$|(i)ed$');  // -> $1$2
   const S1A2_RE = new RegExp('([^su])s$');  // -> $1
   const S1B1_RE = new RegExp(_p(R1_RE) + 'eed(ly)*$');  // -> $1ee
-  const S1B2_RE = new RegExp(_p(C_RE + V_RE + '.*') + '(ed(ly)*|ing(ly)*)$');
+  const S1B2_RE = new RegExp(_p(V_RE + '.*') + '(ed(ly)*|ing(ly)*)$');  // -> $1
   const S1B3_RE = new RegExp('(at|bl|iz)$');  // -> $1e
   const S1C_RE = new RegExp(_p('.' + C_RE) + '(y|Y)');  // -> $1i
 
@@ -89,13 +89,12 @@ const porter = (function() {
   const step_1b = word => {
     if (S1B1_RE.test(word)) return word.replace(S1B1_RE, '$1ee');
     if (S1B2_RE.test(word)) {
-      word = word.replace(S1B2_RE, '');
+      word = word.replace(S1B2_RE, '$1');
       if (S1B3_RE.test(word)) return word.replace(S1B3_RE, '$1e');
       if (D_RE.test(word))    return word.replace(D_RE, '$1$2$3$4$5$6$7$8$9');
       if (SW_RE.test(word))   return word + 'e';
-    } else {
-      return word;
     }
+    return word;
   }
 
   const step_1c = word => {
