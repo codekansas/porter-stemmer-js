@@ -63,8 +63,8 @@ const porter = (function() {
   // Regex for R1, R2, short syllables / words.
   const R1_RE = V_RE + C_RE + '.*?';
   const R2_RE = R1_RE + V_RE + C_RE + '.*?';
-  const SS1_RE = C_RE + V_RE + '[^aeiouwxY]', SS2_RE = '$' + V_RE + C_RE;
-  const SW_RE = new RegExp(C_RE + '*' + SS1_RE + '|' + SS2_RE);
+  const SS1_RE = C_RE + V_RE + '[^aeiouwxY]', SS2_RE = '^' + V_RE + C_RE + '$';
+  const SW_RE = new RegExp(C_RE + '*' + SS1_RE + '$|' + SS2_RE);
 
   // Function for step 0.
   const step_0 = word => {
@@ -77,7 +77,7 @@ const porter = (function() {
   const S1B1_RE = new RegExp(_p(R1_RE) + 'eed(ly)*$');  // -> $1ee
   const S1B2_RE = new RegExp(_p(V_RE + '.*') + '(ed(ly)*|ing(ly)*)$');  // -> $1
   const S1B3_RE = new RegExp('(at|bl|iz)$');  // -> $1e
-  const S1C_RE = new RegExp(_p('.' + C_RE) + '(y|Y)');  // -> $1i
+  const S1C_RE = new RegExp(_p('.' + C_RE) + '(y|Y)$');  // -> $1i
 
   // Functions for step 1.
   const step_1a = word => {
@@ -145,13 +145,16 @@ const porter = (function() {
   }
 
   // Regex for step 5.
-  const S51_RE = new RegExp(_p(R2_RE + 'l') + 'l$');  // -> 1
-  const S52_RE = new RegExp(_p(_p(R2_RE) + '|' + _p(R1_RE + SS1_RE)) + 'e$');
+  const S51_RE = new RegExp(_p(R2_RE + 'l') + 'l$');  // -> $1
+  const S52_RE = new RegExp(_p(R2_RE) + 'e$');  // -> $1
+  const S53_RE = new RegExp(SS1_RE + 'e$');
+  const S54_RE = new RegExp(_p(R1_RE) + 'e$');
 
   // Function for step 5.
   const step_5 = word => {
     if (S51_RE.test(word)) return word.replace(S51_RE, '$1');
-    return word.replace(S52_RE, '$1');
+    if (S52_RE.test(word)) return word.replace(S52_RE, '$1');
+    return S53_RE.test(word) ? word : word.replace(S54_RE, '$1');
   }
 
   const stem_word = word => {
